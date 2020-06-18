@@ -1,12 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bin_utils (0.0.7)
+    binary_struct (2.1.0)
+    bit-struct (0.16)
     mysql2 (0.5.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  bin_utils (~> 0.0.7)
+  binary_struct (~> 2.1)
+  bit-struct (~> 0.16)
   mysql2
 
 BUNDLED WITH
