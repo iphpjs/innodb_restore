@@ -45,10 +45,12 @@ mysql 5.7的frm可以得到表结构，mysql 5.6的frm不行
 
 * 在MySQL5.7.7以前innodb_file_format参数默认是Antelope，默认的行格式是（ROW_FORMAT）是COMPACT， 从MySQL5.7.7以后版本innodb_file_format默认值为Barracuda，而默认的行格式是（ROW_FORMAT）是DYNAMIC，所以需要在创建表结构时指定row_format=compact。
 
-* 通过分析mysqlfrm工具用ibd2sdi工具来解析表结构，最终存在两种方式来恢复数据，即
+* 通过分析mysqlfrm工具用ibd2sdi工具来解析表结构，最终存在二种通用方式来恢复数据，即
     * 使用table_name.frm提取表结构
     * 使用table_name.ibd提取表结构
-对于mysql 5.7这种既存在table_name.frm和table_name.ibd，两种方式均可使用，对于mysql5.6及以下和mysql8.0及以上的只能使用特定的方式恢复。
+* 对于mysql 5.7这种既存在table_name.frm和table_name.ibd，两种方式均可使用，对于mysql5.6及以下和mysql8.0及以上的只能使用特定的方式恢复。
+* 关于特殊方式恢复，将frm文件复制到对应目录后，使用执行SQL flush tables;show create table `table_name`;这种方式只在mysql 5.7及以下版本适用，因为mysql 8.0表结构存储在table_name.ibd中，并且不会理会table_name.frm文件。
+
 
 #### 参考
 * https://blog.csdn.net/xiaoyi23000/article/details/53150776
