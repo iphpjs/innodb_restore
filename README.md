@@ -38,11 +38,17 @@ mysql mysiam 引擎的表不具备事务，例如表名test的表使用mysiam引
          * table_name.frm # 没有此文件
          * table_name.ibd # 存储了表结构及表数据及索引
          
-* 使用mysql-utilities-1.6.4中的mysqlfrm测试获取表结构，
+* 使用mysql-utilities-1.6.4中的mysqlfrm工具测试获取表结构，
 mysql 5.7的frm可以得到表结构，mysql 5.6的frm不行
-* 使用mysql-utilities-1.6.4中的ibd2sdi测试mysql 5.7和mysql 5.8的ibd文件可以得到结构信息
+* 使用mysql 8.0中的ibd2sdi工具测试mysql 5.7和mysql 5.8的ibd文件可以得到结构信息
+* mysql 5.6的table_name.ibd复制到mysql 5.7及mysql8.0，再执行ALTER TABLE `table_name` IMPORT TABLESPACE;后, table_name.ibd会自动加上表结构信息。
 
- 
+* 在MySQL5.7.7以前innodb_file_format参数默认是Antelope，默认的行格式是（ROW_FORMAT）是COMPACT， 从MySQL5.7.7以后版本innodb_file_format默认值为Barracuda，而默认的行格式是（ROW_FORMAT）是DYNAMIC，所以需要在创建表结构时指定row_format=compact。
+
+* 通过分析mysqlfrm工具用ibd2sdi工具来解析表结构，最终存在两种方式来恢复数据，即
+    * 使用table_name.frm提取表结构
+    * 使用table_name.ibd提取表结构
+对于mysql 5.7这种既存在table_name.frm和table_name.ibd，两种方式均可使用，对于mysql5.6及以下和mysql8.0及以上的只能使用特定的方式恢复。
 
 #### 参考
 * https://blog.csdn.net/xiaoyi23000/article/details/53150776
