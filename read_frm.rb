@@ -1,5 +1,9 @@
 require 'bit-struct'
 require 'binary_struct'
+require_relative 'extend'
+require_relative 'struct/misc'
+
+p Misc.constants
 
 class FrmReader
   def initialize(filename)
@@ -41,8 +45,10 @@ class FrmReader
   end
 end
 
-filename = '/Users/suse/Sync/opt/test/blog/failed_jobs.frm'
+filename = '/Users/suse/Sync/opt/test/blog/users.frm'
 # p FrmReader.new(filename).get_create_table_statement
+
+
 
 class FileHeader < BitStruct
   unsigned :magic, 4, 'Magic'
@@ -70,22 +76,27 @@ class FileHeader < BitStruct
   unsigned :key_block_size, 4, 'Key block size'
 end
 
-header = File.open(filename).read(92)
+header_bin = File.open(filename).read(Misc::MAGIC_LEN+Misc::HEADER_LEN)
 
 frm_header = BinaryStruct.new([
-                                  'B', :frm_version,
-                                  'B', :legacy_db_type,
-                                  'B', :IO_SIZE,
-                                  'B', :length,
-                                  'B', :tmp_key_length,
-                                  'B', :rec_length,
-                                  'B', :max_rows,
-                                  'B', :min_rows,
-                                  'B', :db_create_pack,
-                                  'B', :key_info_length,
-                                  'B', :create_options,
-                                  'B', :frm_file_ver,
-                                  'B', :avg_row_length,
+                                  'H4', :magic,
+                                  'C', :frm_version,
+                                  'H6', :reversed_1,
+                                  # 'C', :legacy_db_type,
+                                  'C', :IO_SIZE,
+                                  'H6', :reversed_2,
+                                  'v', :length,
+                                  'n', :tmp_key_length,
+                                  'v', :reserved_3,
+                                  'n', :rec_length,
+                                  'n', :max_rows,
+                                  'n', :min_rows,
+                                  'H6', :reserved_4,
+                                  'C', :db_create_pack,
+                                  'C', :key_info_length,
+                                  'C', :create_options,
+                                  'C', :frm_file_ver,
+                                  'C', :avg_row_length,
                                   'B', :default_charset,
                                   'B', :row_type,
                                   'B', :charset_low,
@@ -97,9 +108,37 @@ frm_header = BinaryStruct.new([
                                   'B', :key_block_size,
                               ])
 
-header_size = frm_header.size
-puts header.size
-puts header_size
-h = frm_header.decode(header[0,header_size])
+
+header_unpacked = header_bin.unpack(sprintf('%s%s', Misc::MAGIC_FORMAT, Misc::HEADER_FORMAT))
+
+magic = header_unpacked[0]
+header = header_unpacked[1..]
+
+general_data = {
+    'frm_version': header[0],
+    'legacy_db_type': Misc::ENGINE_TYPES[header[1]][:text],
+    'IO_SIZE': header[4],
+    'length': header[6],
+    'tmp_key_length': header[7],
+    'rec_length': header[8],
+    'max_rows': header[10],
+    'min_rows': header[11],
+    'db_create_pack': header[12] >> 8,  # only want 1 byte
+    'key_info_length': header[13],
+    'create_options': header[14],
+    'frm_file_ver': header[16],
+    'avg_row_length': header[17],
+    'default_charset': header[18],
+    'row_type': header[20],
+    'charset_low': header[21],
+    'table_charset': (header[21] << 8) + header[18],
+    'key_length': header[24],
+    'MYSQL_VERSION_ID': header[25],
+    'extra_size': header[26],
+    'default_part_eng': header[29],
+    'key_block_size': header[30],
+}
+
+
 
 a = 1

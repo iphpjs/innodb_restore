@@ -24,13 +24,15 @@ class Dir
   end
 end
 
+
+# only work in mysql5.6/5.7
 class Client
   def initialize(dbname='blog')
     @dbname = dbname
     @client = Mysql2::Client.new(
         :host => 'localhost',
         :username => 'root',
-        :password => '', # 密码
+        :password => 'secret', # 密码
         :encoding => 'utf8' # 编码
     )
   end
@@ -53,7 +55,7 @@ class Client
 
   def run
     datadir = self.get_data_dir
-    tablename = 'failed_jobs'
+    tablename = 'users'
     # p datadir
     @client.select_db(@dbname)
     dirname = '/Users/suse/Sync/opt/test/blog'
