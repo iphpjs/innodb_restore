@@ -34,9 +34,9 @@ mysql mysiam 引擎的表不具备事务，例如表名test的表使用mysiam引
     * mysql 5.7 (version: 5.7.14, innodb_version: 5.7.14)
         * table_name.frm # 存储了表结构
         * table_name.ibd # 存储了表结构及表数据及索引
-      * mysql 8.0 (version: 8.0.19, innodb_version: 8.0.19)
-         * table_name.frm # 没有此文件
-         * table_name.ibd # 存储了表结构及表数据及索引
+    * mysql 8.0 (version: 8.0.19, innodb_version: 8.0.19)
+        * table_name.frm # 没有此文件
+        * table_name.ibd # 存储了表结构及表数据及索引
          
 * 使用mysql-utilities-1.6.4中的mysqlfrm工具测试获取表结构，
 mysql 5.7的frm可以得到表结构，mysql 5.6的frm不行
